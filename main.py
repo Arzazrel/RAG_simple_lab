@@ -6,14 +6,81 @@ Version: November 15, 2026
 """
 
 from pathlib import Path
-from src.model import LocalLLM          # modulo del modello (struttura + pesi)
-from src.retrieval import NameRetriever#, SemanticRetriever, WebRetriever
+from src.model import LocalLLM          
+from src.retrieval import NameRetriever, SemanticRetriever#, WebRetriever
 
 # ----------------------- costant -----------------------
 SEPARATOR_CHAR = 100                # number of '=' in UI print
 DOCS_FOLDER = "docs"
+retriever_type = ("name", "embedding")
 
-# ----------------------- methods -----------------------
+# ----------------------- UI utils methods -----------------------
+
+
+def print_line_list(el_list):
+    """Method to print a list in this way: a new line for each element and '-' at the beginning of the line."""
+    
+    for elem in el_list:
+        print("- ", elem)
+
+def print_UI_chapter_head(chapter_name: str):
+    """
+    Method to print chapter head in this format -> " === chapter_name === "
+    
+    Args
+        chapter_name: the name of the chapter
+    """
+    print("=" * (SEPARATOR_CHAR // 3) + chapter_name + "=" * (SEPARATOR_CHAR // 3))
+
+
+def get_user_settings():
+    """
+    Method to get the user settings for whych type of model or retrieval to use.
+    
+    Returns:
+        retriever: the type of retriever.
+    """
+    print_UI_chapter_head(" MODEL SETTINGS ")
+    print("Available retrievers:")
+    print_line_list(retriever_type)
+    user_retriever = input("Choose the type of retriever: ")
+    
+    if user_retriever not in retriever_type:
+        print("Unknown retriever.")
+        return None
+    elif user_retriever == retriever_type[0]:   # NameRetriever
+        retriever = NameRetriever(DOCS_FOLDER)  
+    elif user_retriever == retriever_type[1]:   # SemanticRetriever
+        retriever = SemanticRetriever(DOCS_FOLDER)  
+    # WebRetriever
+        
+    return retriever
+
+
+def print_document_context_name():
+    """
+    Method to print the list of the context documents name.
+    """
+    
+    path_list = list(Path(DOCS_FOLDER).glob("*.txt"))
+    name_list = [f.stem for f in path_list]
+    print_UI_chapter_head(" Context documents ")
+    print_line_list(name_list)
+          
+
+def print_document_context_text(query, retrieved):
+    """
+    Method to print the key searched in the document.
+    
+    Args:
+        query: is the user's query
+        retrieved: the retrieved context (doictionaries of name and text for the documents)
+    """
+    print ("The texts of the used context documents:")
+    for c in retrieved:
+        print("-------------------")
+        print("Chunk/Document name: " + c["source"])
+        print("Chunk/document text: \n" + c["text"])
 
 
 def build_prompt(query, retrieved):
@@ -32,39 +99,13 @@ def build_prompt(query, retrieved):
             f"Context:\n{ctx}\n\nQuestion: {query}\nAnswer:")
 
 
-def print_document_context_name():
-    """
-    Method to print the list of the context documents name.
-    """
-    
-    path_list = list(Path(DOCS_FOLDER).glob("*.txt"))
-    name_list = [f.stem for f in path_list]
-    print("=" * (SEPARATOR_CHAR // 3) + " Context documents " + "=" * (SEPARATOR_CHAR // 3))
-    for name in name_list:
-        print("- ", name)
-        
-
-def print_document_context_text(query, retrieved):
-    """
-    Method to print the key searched in the document.
-    
-    Args:
-        query: is the user's query
-        retrieved: the retrieved context (doictionaries of name and text for the documents)
-    """
-    print ("The texts of the used context documents:")
-    for c in retrieved:
-        print("- " + c["source"] + " -")
-        print(c["text"])
-
-
 def main():
     """
     Main method to get user prompt, manage them and return the model answers.
     """
     
     llm = LocalLLM()                        # load model structur and weigths
-    retriever = NameRetriever(DOCS_FOLDER)  # o NameRetriever / WebRetriever
+    retriever = get_user_settings()
     print_document_context_name()
     
     while True:
