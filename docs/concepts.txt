@@ -1,0 +1,11 @@
+"Thennic Drift" is the slow tendency of a group's shared vocabulary to lose precise meaning as it spreads to newcomers. Each new member subtly reinterprets a term until the original definition is forgotten. Linguists measure Thennic Drift by comparing how a word is used at the center and at the edges of a community.
+
+"Orbal Debt" is the hidden cost a project accumulates when decisions are postponed rather than made. Unlike financial debt, it is paid in confusion and rework instead of money. Teams that ignore their Orbal Debt often find that small delays compound into major failures.
+
+"Quiescent Bias" is the preference people show for options that require no visible action, even when acting would clearly be better. It explains why a default setting is rarely changed. Quiescent Bias grows stronger when the consequences of inaction are delayed.
+
+"Lemmic Loop" is a reasoning trap in which a conclusion is used as evidence for one of its own premises. It differs from ordinary circular reasoning because the loop passes through at least three separate steps, making it harder to spot. Detecting a Lemmic Loop usually requires drawing the argument as a diagram.
+
+"Fathom Horizon" is the maximum distance into the future for which a plan can still be meaningfully detailed. Beyond this horizon, planning becomes guesswork and should be replaced by broad intentions. A team's Fathom Horizon shrinks whenever its environment becomes more unpredictable.
+
+"Granular Trust" is the practice of granting confidence to a person for one narrow skill while withholding it for others. It replaces the blunt idea of trusting someone completely or not at all. Granular Trust is considered healthier for teams because it matches confidence to demonstrated ability.

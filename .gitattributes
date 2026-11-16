@@ -1,2 +1,29 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# --- Core: generator model (Qwen2.5-3B-Instruct) ---
+# transformers load the instruction-tuned model; accelerate is needed by device_map="auto".
+torch>=2.2
+transformers>=4.44
+accelerate>=0.33
+ 
+# --- Level 2: semantic retrieval ---
+# sentence-transformers generates the embeddings for the chunks and the query.
+sentence-transformers>=3.0
+numpy>=1.26
+ 
+# --- Level 3: retrieval from the internet (fallback) ---
+requests>=2.31
+ 
+# --- Optional: 4-bit quantization to reduce VRAM usage ---
+# Uncomment if you want to load the model in 4-bit (load_in_4bit=True).
+bitsandbytes>=0.43
+ 
+# --- Optional: advanced extensions ---
+# chromadb>=0.5        # persistent local vector DB
+# rank-bm25>=0.2       # hybrid search (BM25)
+
+# Python bytecode e cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

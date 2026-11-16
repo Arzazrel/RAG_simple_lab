@@ -1,0 +1,11 @@
+"Florbometer" is a handheld instrument used to measure the acoustic pressure of underwater currents. It works by detecting micro-vibrations in a sealed gel chamber and converting them into a pressure index known as the florbo scale. Marine engineers rely on it to calibrate deep-sea listening stations.
+
+"Grennal Coil" is a coiled copper component that stores rotational magnetic energy for short bursts. Unlike a standard inductor, it releases its charge in a single controlled pulse, which makes it popular in experimental railgun prototypes. A fully charged Grennal Coil can hold its energy for up to nine minutes.
+
+"Tavrik Lens" is an optical element that bends ultraviolet light along a spiral path instead of a straight line. It was designed to concentrate faint starlight for amateur spectroscopes. The defining feature of a Tavrik Lens is its twin focal points, one for visible and one for ultraviolet light.
+
+"Delmar Gauge" is a dial-based meter that reports the humidity of granular materials such as sand or powdered sugar. It expresses results in delmars, where zero delmars means perfectly dry and one hundred delmars means fully saturated. Food factories use it to prevent clumping in storage silos.
+
+"Perrin Valve" is a self-closing valve that seals automatically when the fluid passing through it exceeds a chosen temperature. It contains a wax plug that expands with heat and blocks the channel. Brewers install Perrin Valves to stop a batch from overheating during fermentation.
+
+"Quassel Node" is a small wireless relay that rebroadcasts a signal only when three or more identical messages arrive within one second. This rule was invented to filter out random noise in sensor networks. A Quassel Node ignores any message it receives just once.

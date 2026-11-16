@@ -1,0 +1,21 @@
+# --- Core: modello generatore (Qwen2.5-3B-Instruct) ---
+# transformers carica il modello instruction-tuned; accelerate serve a device_map="auto".
+torch>=2.2
+transformers>=4.44
+accelerate>=0.33
+
+# --- Livello 2: retrieval semantico ---
+# sentence-transformers produce gli embedding dei chunk e della query.
+sentence-transformers>=3.0
+numpy>=1.26
+
+# --- Livello 3: retrieval da internet (fallback) ---
+requests>=2.31
+
+# --- Opzionale: quantizzazione a 4-bit per ridurre la VRAM ---
+# Scommenta se vuoi caricare il modello in 4-bit (load_in_4bit=True).
+bitsandbytes>=0.43
+
+# --- Opzionale: estensioni avanzate (vedi documento del progetto) ---
+# chromadb>=0.5        # vector DB locale persistente
+# rank-bm25>=0.2       # hybrid search (BM25)
