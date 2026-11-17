@@ -3,7 +3,7 @@ File for the retrieval component of RAG system.
 In this file there re different classes each one for a different level of information retrieval (from the simplest to the most difficult).
 
 Author: Alessandro Diana
-Version: November 15, 2026
+Version: November 17, 2026
 """
 # imports for retrieval level 1
 from pathlib import Path
@@ -14,6 +14,9 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 # imports for retrieval level 3
+import requests
+import re
+import html
 
 # ------------------------------------ LEVEL 1: retrieval by name ------------------------------------
 
@@ -72,6 +75,7 @@ class SemanticRetriever:
     optimized for semantic search, clustering, and Retrieval-Augmented Generation (RAG). 
     Similarity is computed efficiently via cosine similarity on normalized vectors.
     """
+    
     def __init__(self, folder: str, model_name="all-MiniLM-L6-v2",chunk_size=400, overlap=50):
         self.embedder = SentenceTransformer(model_name)                 # the embedder used
         self.chunks = self._load_chunks(folder, chunk_size, overlap)    # the chunks
@@ -120,6 +124,180 @@ class SemanticRetriever:
         scores = self.index @ q                 # cosine similarity (normalized vectors)
         top = np.argsort(scores)[::-1][:k]      # get the top k
         return [self.chunks[i] for i in top]
+        
+    def min_similarity_retrieve(self, query: str, k: int = 3, min_similarity: float = 0.3):
+        """
+        Method to compare the chunks with the query and return the most k relevant ones.
+        
+        Args:
+            query: the user query
+            k: the number of top 
+            min_similarity: the minimu similarity request for the best matching chunks from the context
+            
+        Returns: the chosen chunks or an empty list if the min similarity threshold is not met
+        """
+        q = self.embedder.encode([query], normalize_embeddings=True)[0]
+        scores = self.index @ q                 # cosine similarity (normalized vectors)
+        
+        best = scores[np.argmax(scores)] if scores.size > 0 else -1.0
+
+        if best >= min_similarity: # local evidence is good enough
+            top = np.argsort(scores)[::-1][:k]      # get the top k
+            return [self.chunks[i] for i in top]
+        else:
+            print(f"[hybrid] best local score {best:.3f} < {min_similarity}: searching the web...")
+            return []                   # local evidence isn't good enough
 
 
-# ------------------------------------ LEVEL : retrieval by  ------------------------------------
+# ------------------------------------ LEVEL 3.0: retrieval by internet ------------------------------------
+
+# base class
+class WebRetriever:
+    """
+    Retrieval from the internet (Wikipedia). Use wikipedia because has public API, free and keyless.
+    This class hasn't chunks, search from internet. Saving the context retrieved from the internet 
+    for each individual question would take up a lot of memory and consume significant resources.
+
+    Two-step MediaWiki call:
+      1) list=search  -> find the most relevant article titles for the query;
+      2) prop=extracts -> download the plain-text intro of those articles.
+    The article intro is long enough to be a real context chunk, which is the
+    main fix compared to using the search 'snippet' alone.
+    """
+    URL = "https://en.wikipedia.org/w/api.php"                                  # English wiki (this project use english text)
+    HEADERS = {"User-Agent": "RAGRetrieverBot/1.0 (educational RAG project)"}   # Wikipedia asks for a descriptive User-Agent identifying the client.
+
+    def __init__(self, lang: str = "en", sentences: int = 5):
+        """
+        Args:
+            lang: Wikipedia language edition (e.g. 'en', 'it').
+            sentences: how many sentences of each article intro to keep.
+        """
+        self.URL = f"https://{lang}.wikipedia.org/w/api.php"
+        self.sentences = sentences
+        self.session = requests.Session()
+        self.session.headers.update(self.HEADERS)
+
+    def retrieve(self, query: str, k: int = 3):
+        """
+        Search Wikipedia and return up to k chunks with the article intros.
+
+        Args:
+            query: the user query
+            k: the number of articles to retrieve
+
+        Returns: a list of dict ("source": "wikipedia:<title>", "text": <intro>).
+                 Returns [] on any network/parse error, so the caller can degrade
+                 gracefully instead of crashing.
+        """
+        try:
+            titles = self._search_titles(query, k)
+            if not titles:
+                return []
+            return self._fetch_extracts(titles)
+        except requests.RequestException as e:
+            print(f"[web] network error: {e}")
+            return []
+
+    def _search_titles(self, query: str, k: int):
+        """Step 1: get the k most relevant article titles for the query."""
+        params = {
+            "action": "query",
+            "list": "search",
+            "srsearch": query,
+            "srlimit": k,
+            "srprop": "",              # we only need titles here
+            "format": "json",
+        }
+        data = self.session.get(self.URL, params=params, timeout=15).json()
+        return [hit["title"] for hit in data.get("query", {}).get("search", [])]
+
+    def _fetch_extracts(self, titles: list[str]):
+        """Step 2: download the plain-text intro of each title."""
+        params = {
+            "action": "query",
+            "prop": "extracts",
+            "exintro": 1,              # only the lead section
+            "explaintext": 1,          # plain text, no HTML
+            "exsentences": self.sentences,
+            "titles": "|".join(titles),
+            "redirects": 1,            # follow redirects to the real article
+            "format": "json",
+        }
+        data = self.session.get(self.URL, params=params, timeout=15).json()
+        pages = data.get("query", {}).get("pages", {})
+        chunks = []
+        for page in pages.values():
+            extract = page.get("extract", "").strip()
+            if extract:                # skip missing pages (no 'extract')
+                text = " ".join(html.unescape(extract).split())   # normalize whitespace
+                chunks.append({"source": "wikipedia:" + page.get("title", ""), "text": text})
+        return chunks
+
+
+# ------------------------------------ LEVEL 3.1: local semantic + web fallback(HYBRID) ------------------------------------
+
+# advance class
+class HybridRetriever:
+    """
+    Corrective-RAG-style retriever: try the local semantic retriever first and, 
+    only if the BEST local match is weak, fall back to the web.
+
+    This keeps the two sources cleanly separated (no re-indexing of the whole
+    corpus, no permanent pollution of the local chunks) and decides the fallback
+    on the strongest local hit..
+    """
+    
+    def __init__(self, folder: str, model_name="all-MiniLM-L6-v2",chunk_size=400, overlap=50, min_similarity: float = 0.35,web_lang: str = "en"):
+        """
+        Args:
+            model_name: the model for generate the document embeddings
+            chunk_size:size of the chunks
+            overlap: the number of token share by a chunk and its neighbour
+            min_similarity: if the top local chunk scores below this cosine
+                            similarity, the web retriever is queried as a fallback.
+            web_lang: the language of the wikipedia
+        """
+        
+        self.local = SemanticRetriever(folder, model_name, chunk_size, overlap)
+        self.web = WebRetriever(lang=web_lang)
+        self.min_similarity = min_similarity
+
+    def retrieve(self, query: str, k: int = 3):
+        """
+        Method to compare the chunks with the query and return the most k relevant ones.
+        
+        Args:
+            query: the user query
+            k: the number of top 
+            
+        Returns: up to k chunks. Local chunks carry a 'score'; web chunks are appended only when the local evidence is insufficient.
+        """
+        local_hits = self.local.min_similarity_retrieve(query, k,self.min_similarity)
+
+        if local_hits:
+            return local_hits          # local evidence is good enough
+
+        # weak local match -> enrich with web results
+        web_hits = self.web.retrieve(query, k=k)
+        # keep the strongest local hit(s) plus the web hits, trimmed to k
+        combined = local_hits + web_hits
+        return combined[:k] if combined else []
+
+
+# ------------------------------------ quick manual test ------------------------------------
+
+
+if __name__ == "__main__":
+    import sys
+    folder = sys.argv[1] if len(sys.argv) > 1 else "docs"
+
+    print("== LEVEL 2: semantic ==")
+    sem = SemanticRetriever(folder)
+    for c in sem.retrieve("What measures acoustic pressure underwater?", k=2):
+        print(f"  [{c['score']:.3f}] {c['source']}: {c['text'][:70]}...")
+
+    print("\n== LEVEL 3: web (needs internet) ==")
+    web = WebRetriever()
+    for c in web.retrieve("magnetic loop antenna", k=2):
+        print(f"  {c['source']}: {c['text'][:70]}...")

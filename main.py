@@ -7,12 +7,12 @@ Version: November 15, 2026
 
 from pathlib import Path
 from src.model import LocalLLM          
-from src.retrieval import NameRetriever, SemanticRetriever#, WebRetriever
+from src.retrieval import NameRetriever, SemanticRetriever, HybridRetriever
 
 # ----------------------- costant -----------------------
 SEPARATOR_CHAR = 100                # number of '=' in UI print
 DOCS_FOLDER = "docs"
-retriever_type = ("name", "embedding")
+retriever_type = ("name", "embedding", "web")
 
 # ----------------------- UI utils methods -----------------------
 
@@ -52,7 +52,8 @@ def get_user_settings():
         retriever = NameRetriever(DOCS_FOLDER)  
     elif user_retriever == retriever_type[1]:   # SemanticRetriever
         retriever = SemanticRetriever(DOCS_FOLDER)  
-    # WebRetriever
+    elif user_retriever == retriever_type[2]:   # HybridRetriever
+        retriever = HybridRetriever(DOCS_FOLDER) 
         
     return retriever
 
