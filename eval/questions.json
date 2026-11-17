@@ -1,0 +1,167 @@
+{
+  "description": "Evaluation set for the RAG A/B comparison. Each item pairs a question about an invented definition with the expected answer and the key terms that must appear for the answer to count as correct. Because the definitions are invented, a correct answer without RAG is essentially impossible: it can only come from the retrieved context. The 'source_file' and 'term' fields support both the name-based (level 1) and semantic (level 2) retrieval checks.",
+  "items": [
+    {
+      "id": "q01",
+      "term": "Florbometer",
+      "source_file": "instruments.txt",
+      "question": "What is a Florbometer and what does it measure?",
+      "expected_answer": "A handheld instrument that measures the acoustic pressure of underwater currents, reporting results on the florbo scale by detecting micro-vibrations in a sealed gel chamber.",
+      "key_terms": ["acoustic pressure", "underwater", "florbo scale", "gel chamber"]
+    },
+    {
+      "id": "q02",
+      "term": "Grennal Coil",
+      "source_file": "instruments.txt",
+      "question": "How long can a Grennal Coil hold its charge, and how does it release it?",
+      "expected_answer": "A fully charged Grennal Coil can hold its energy for up to nine minutes and releases it in a single controlled pulse.",
+      "key_terms": ["nine minutes", "single", "pulse"]
+    },
+    {
+      "id": "q03",
+      "term": "Tavrik Lens",
+      "source_file": "instruments.txt",
+      "question": "What is the defining feature of a Tavrik Lens?",
+      "expected_answer": "Its twin focal points, one for visible light and one for ultraviolet light, bending ultraviolet light along a spiral path.",
+      "key_terms": ["twin focal points", "ultraviolet", "spiral"]
+    },
+    {
+      "id": "q04",
+      "term": "Delmar Gauge",
+      "source_file": "instruments.txt",
+      "question": "What does a Delmar Gauge measure and in what unit?",
+      "expected_answer": "It measures the humidity of granular materials such as sand or powdered sugar, expressed in delmars from zero (perfectly dry) to one hundred (fully saturated).",
+      "key_terms": ["humidity", "granular", "delmars", "hundred"]
+    },
+    {
+      "id": "q05",
+      "term": "Perrin Valve",
+      "source_file": "instruments.txt",
+      "question": "How does a Perrin Valve work?",
+      "expected_answer": "It is a self-closing valve containing a wax plug that expands with heat and seals the channel when the fluid exceeds a chosen temperature.",
+      "key_terms": ["self-closing", "wax plug", "temperature"]
+    },
+    {
+      "id": "q06",
+      "term": "Quassel Node",
+      "source_file": "instruments.txt",
+      "question": "Under what condition does a Quassel Node rebroadcast a signal?",
+      "expected_answer": "Only when three or more identical messages arrive within one second; it ignores any message received just once.",
+      "key_terms": ["three", "identical", "one second", "ignores"]
+    },
+    {
+      "id": "q07",
+      "term": "Mirelark",
+      "source_file": "creatures.txt",
+      "question": "How does a Mirelark navigate, and where does it nest?",
+      "expected_answer": "It navigates using the faint glow of lichen rather than the stars, and nests exclusively inside hollow basalt columns near cold springs.",
+      "key_terms": ["lichen", "basalt columns", "cold springs"]
+    },
+    {
+      "id": "q08",
+      "term": "Brindlewhal",
+      "source_file": "creatures.txt",
+      "question": "How does a Brindlewhal stay submerged for so long, and what does it eat?",
+      "expected_answer": "It stores oxygen in a muscular sac along its spine, letting it stay submerged for nearly two hours, and feeds by filtering clay from riverbeds to extract microscopic worms.",
+      "key_terms": ["oxygen", "sac", "spine", "two hours", "clay", "worms"]
+    },
+    {
+      "id": "q09",
+      "term": "Sythe Moth",
+      "source_file": "creatures.txt",
+      "question": "What happens to a Sythe Moth's wings in moonlight?",
+      "expected_answer": "The powder coating its wings hardens into a thin shell when touched by moonlight, forming a unique fingerprint-like pattern, while the wings stay soft during the day.",
+      "key_terms": ["powder", "hardens", "shell", "moonlight", "pattern"]
+    },
+    {
+      "id": "q10",
+      "term": "Ganuph",
+      "source_file": "creatures.txt",
+      "question": "How does a Ganuph regulate its temperature and stay hydrated?",
+      "expected_answer": "It swallows warm pebbles at dawn and cold pebbles at dusk to regulate temperature, and obtains all its moisture from the pebbles rather than drinking water.",
+      "key_terms": ["pebbles", "dawn", "dusk", "moisture", "minerals"]
+    },
+    {
+      "id": "q11",
+      "term": "Pellow Crab",
+      "source_file": "creatures.txt",
+      "question": "What makes a Pellow Crab's shell change color?",
+      "expected_answer": "Its shell changes color to match the surrounding sound rather than light: loud environments turn it deep red and silence turns it pale blue.",
+      "key_terms": ["sound", "red", "blue", "loud", "silence"]
+    },
+    {
+      "id": "q12",
+      "term": "Vossen Fox",
+      "source_file": "creatures.txt",
+      "question": "How does a Vossen Fox obtain water?",
+      "expected_answer": "Its oversized ears collect dew at night and channel the droplets down to its mouth; it sleeps standing up to keep its ears raised and can survive a month without a conventional water source.",
+      "key_terms": ["ears", "dew", "night", "standing", "month"]
+    },
+    {
+      "id": "q13",
+      "term": "Thennic Drift",
+      "source_file": "concepts.txt",
+      "question": "What is Thennic Drift and how is it measured?",
+      "expected_answer": "The slow tendency of a group's shared vocabulary to lose precise meaning as it spreads to newcomers; it is measured by comparing how a word is used at the center versus the edges of a community.",
+      "key_terms": ["vocabulary", "meaning", "newcomers", "center", "edges"]
+    },
+    {
+      "id": "q14",
+      "term": "Orbal Debt",
+      "source_file": "concepts.txt",
+      "question": "What is Orbal Debt and how is it paid?",
+      "expected_answer": "The hidden cost a project accumulates when decisions are postponed; unlike financial debt it is paid in confusion and rework rather than money.",
+      "key_terms": ["postponed", "decisions", "confusion", "rework"]
+    },
+    {
+      "id": "q15",
+      "term": "Quiescent Bias",
+      "source_file": "concepts.txt",
+      "question": "What does Quiescent Bias describe?",
+      "expected_answer": "The preference people show for options that require no visible action even when acting would be better; it explains why a default setting is rarely changed and grows stronger when the consequences of inaction are delayed.",
+      "key_terms": ["no", "action", "default", "inaction", "delayed"]
+    },
+    {
+      "id": "q16",
+      "term": "Lemmic Loop",
+      "source_file": "concepts.txt",
+      "question": "How does a Lemmic Loop differ from ordinary circular reasoning?",
+      "expected_answer": "It is a reasoning trap where a conclusion is used as evidence for one of its own premises, but the loop passes through at least three separate steps, which makes it harder to spot and usually requires drawing the argument as a diagram.",
+      "key_terms": ["conclusion", "premise", "three", "steps", "diagram"]
+    },
+    {
+      "id": "q17",
+      "term": "Fathom Horizon",
+      "source_file": "concepts.txt",
+      "question": "What is a Fathom Horizon and what shrinks it?",
+      "expected_answer": "The maximum distance into the future for which a plan can still be meaningfully detailed; beyond it planning becomes guesswork, and the horizon shrinks whenever the environment becomes more unpredictable.",
+      "key_terms": ["future", "plan", "detailed", "guesswork", "unpredictable"]
+    },
+    {
+      "id": "q18",
+      "term": "Granular Trust",
+      "source_file": "concepts.txt",
+      "question": "What is Granular Trust and why is it considered healthier for teams?",
+      "expected_answer": "The practice of granting confidence to a person for one narrow skill while withholding it for others; it replaces all-or-nothing trust and is healthier because it matches confidence to demonstrated ability.",
+      "key_terms": ["narrow skill", "withholding", "ability"]
+    },
+    {
+      "id": "q19",
+      "term": "Zelthorn Drive",
+      "source_file": null,
+      "question": "What is a Zelthorn Drive and how does it work?",
+      "expected_answer": "NOT_IN_CORPUS",
+      "key_terms": [],
+      "note": "Control question: this term does not exist in any document. A well-behaved RAG system should admit it has no information rather than inventing an answer. Useful for measuring hallucination under grounding instructions."
+    },
+    {
+      "id": "q20",
+      "term": "Marrow Compass",
+      "source_file": null,
+      "question": "Describe the Marrow Compass and its main use.",
+      "expected_answer": "NOT_IN_CORPUS",
+      "key_terms": [],
+      "note": "Control question: term absent from the corpus. Expected behaviour with RAG: state that the context does not contain this definition."
+    }
+  ]
+}

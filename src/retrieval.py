@@ -120,6 +120,9 @@ class SemanticRetriever:
             
         Returns: the chosen chunks
         """
+        if not self.chunks or self.index.size == 0:
+            return []  
+        
         q = self.embedder.encode([query], normalize_embeddings=True)[0]
         scores = self.index @ q                 # cosine similarity (normalized vectors)
         top = np.argsort(scores)[::-1][:k]      # get the top k
@@ -136,6 +139,9 @@ class SemanticRetriever:
             
         Returns: the chosen chunks or an empty list if the min similarity threshold is not met
         """
+        if not self.chunks or self.index.size == 0:
+            return []  
+        
         q = self.embedder.encode([query], normalize_embeddings=True)[0]
         scores = self.index @ q                 # cosine similarity (normalized vectors)
         
