@@ -1,0 +1,46 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Local model cache (LLM weights + embedding model) ---
+# Downloaded on first run into models/ and reused; must NOT be versioned.
+models/
+*.safetensors
+*.bin
+*.gguf
+*.pt
+*.pth
+.cache/
+huggingface/
+
+# --- Saved embedding indices (regenerable) ---
+*.npy
+*.faiss
+index/
+.chroma/
+
+# --- Evaluation outputs ---
+eval/results/
+*.log
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Secrets (optional API keys for the web level) ---
+.env
+*.key

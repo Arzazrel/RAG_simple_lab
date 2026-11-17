@@ -82,9 +82,9 @@ def make_retriever(kind: str, docs: str):
     if kind == "name":
         return NameRetriever(docs)
     if kind == "semantic":
-        return SemanticRetriever(docs)
+        return SemanticRetriever(docs, cache_dir="models")
     if kind == "hybrid":
-        return HybridRetriever(docs)
+        return HybridRetriever(docs, cache_dir="models")
     raise ValueError(f"unknown retriever: {kind}")
 
 

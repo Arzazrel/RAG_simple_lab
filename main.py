@@ -6,12 +6,14 @@ Version: November 15, 2026
 """
 
 from pathlib import Path
-from src.model import LLMConfig, LocalLLM          
+from src.model import LLMConfig, LocalLLM, MODEL_SPECS, available_vram_gb
 from src.retrieval import NameRetriever, SemanticRetriever, HybridRetriever
 
 # ----------------------- costant -----------------------
 SEPARATOR_CHAR = 100                # number of '=' in UI print
 DOCS_FOLDER = "docs"
+# Local cache folder for the embedding model, so it is downloaded only once.
+EMB_CACHE_DIR = "models"
 retriever_type = ("name", "embedding", "web")
 model_config = {
     "small": "Qwen/Qwen2.5-3B-Instruct",
@@ -54,24 +56,42 @@ def get_user_settings():
     user_retriever = input("Choose the type of retriever: ")
         
     # model type
-    print("\nAvailable models:")
-    for key in model_config:
-        print("Type: " + key + " -> " + model_config[key])
+    print("\nAvailable models (download = disk space to pull once; "
+          "4-bit VRAM = GPU memory needed with quantization):")
+    vram = available_vram_gb()
+    if vram is not None:
+        print(f"(Detected GPU VRAM: ~{vram:.1f} GB)")
+    else:
+        print("(No CUDA GPU detected: models will run on CPU, slowly.)")
+    for key, name in model_config.items():
+        spec = MODEL_SPECS.get(name, {})
+        dl = spec.get("download_gb")
+        v4 = spec.get("vram_4bit_gb")
+        vfp = spec.get("vram_fp16_gb")
+        info = ""
+        if dl is not None:
+            info = (f"  [download ~{dl:.1f} GB | VRAM 4-bit ~{v4:.1f} GB | "
+                    f"VRAM fp16 ~{vfp:.1f} GB]")
+        # mark models that likely won't fit in 4-bit on the detected GPU
+        warn = ""
+        if vram is not None and v4 is not None and vram < v4 + 1.0:
+            warn = "  (!) may not fit in 4-bit on this GPU"
+        print(f"Type: {key:<7} -> {name}{info}{warn}")
     user_model = input("Choose the type of model: ")
     config = LLMConfig()
     if user_model in model_config.keys():
         config.model_name = model_config[user_model]
-        
+
     if user_retriever not in retriever_type:
         print("Unknown retriever.")
         return None
     elif user_retriever == retriever_type[0]:   # NameRetriever
-        retriever = NameRetriever(DOCS_FOLDER)  
+        retriever = NameRetriever(DOCS_FOLDER)
     elif user_retriever == retriever_type[1]:   # SemanticRetriever
-        retriever = SemanticRetriever(DOCS_FOLDER)  
+        retriever = SemanticRetriever(DOCS_FOLDER, cache_dir=EMB_CACHE_DIR)
     elif user_retriever == retriever_type[2]:   # HybridRetriever
-        retriever = HybridRetriever(DOCS_FOLDER) 
-        
+        retriever = HybridRetriever(DOCS_FOLDER, cache_dir=EMB_CACHE_DIR)
+
     return retriever, config
 
 

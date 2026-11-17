@@ -76,8 +76,10 @@ class SemanticRetriever:
     Similarity is computed efficiently via cosine similarity on normalized vectors.
     """
     
-    def __init__(self, folder: str, model_name="all-MiniLM-L6-v2",chunk_size=400, overlap=50):
-        self.embedder = SentenceTransformer(model_name)                 # the embedder used
+    def __init__(self, folder: str, model_name="all-MiniLM-L6-v2", chunk_size=400, overlap=50,
+                 cache_dir: str | None = None):
+        # cache_folder: save the embedding model locally so it is downloaded only once.
+        self.embedder = SentenceTransformer(model_name, cache_folder=cache_dir)  # the embedder used
         self.chunks = self._load_chunks(folder, chunk_size, overlap)    # the chunks
         self.index = self._build_index()                                # the chunks embeddings
 
@@ -254,7 +256,7 @@ class HybridRetriever:
     on the strongest local hit..
     """
     
-    def __init__(self, folder: str, model_name="all-MiniLM-L6-v2",chunk_size=400, overlap=50, min_similarity: float = 0.35,web_lang: str = "en"):
+    def __init__(self, folder: str, model_name="all-MiniLM-L6-v2",chunk_size=400, overlap=50, min_similarity: float = 0.35,web_lang: str = "en", cache_dir: str | None = None):
         """
         Args:
             model_name: the model for generate the document embeddings
@@ -265,7 +267,7 @@ class HybridRetriever:
             web_lang: the language of the wikipedia
         """
         
-        self.local = SemanticRetriever(folder, model_name, chunk_size, overlap)
+        self.local = SemanticRetriever(folder, model_name, chunk_size, overlap, cache_dir=cache_dir)
         self.web = WebRetriever(lang=web_lang)
         self.min_similarity = min_similarity
 
