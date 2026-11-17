@@ -20,6 +20,10 @@ from dataclasses import dataclass, field
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
+# ----------------------- costant -----------------------
+
+
+# ----------------------- methods -----------------------
 
 def print_used_vram(model):
     """
@@ -170,4 +174,8 @@ MODEL NOTE:
         Site specs: https://huggingface.co/Qwen/Qwen2.5-3B-Instruct
         Long-context Support up to 128K tokens and can generate up to 8K tokens.
         Multilingual support for over 29 languages, including Chinese, English, French, Spanish, Portuguese, German, Italian, Russian, Japanese, Korean, Vietnamese, Thai, Arabic, and more.
+    Qwen2.5-7B-Instruct:
+        Site specs: https://huggingface.co/ThomasBaruzier/Qwen2.5-7B-Instruct-GGUF
+    Qwen2.5-14B-Instruct:
+        Site specs: https://huggingface.co/ThomasBaruzier/Qwen2.5-14B-Instruct-GGUF
 """

@@ -6,13 +6,18 @@ Version: November 15, 2026
 """
 
 from pathlib import Path
-from src.model import LocalLLM          
+from src.model import LLMConfig, LocalLLM          
 from src.retrieval import NameRetriever, SemanticRetriever, HybridRetriever
 
 # ----------------------- costant -----------------------
 SEPARATOR_CHAR = 100                # number of '=' in UI print
 DOCS_FOLDER = "docs"
 retriever_type = ("name", "embedding", "web")
+model_config = {
+    "small": "Qwen/Qwen2.5-3B-Instruct",
+    "medium": "Qwen/Qwen2.5-7B-Instruct",
+    "large": "Qwen/Qwen2.5-14B-Instruct"
+}
 
 # ----------------------- UI utils methods -----------------------
 
@@ -39,12 +44,24 @@ def get_user_settings():
     
     Returns:
         retriever: the type of retriever.
+        config: the model configuration
     """
     print_UI_chapter_head(" MODEL SETTINGS ")
+    
+    # retriever
     print("Available retrievers:")
     print_line_list(retriever_type)
     user_retriever = input("Choose the type of retriever: ")
-    
+        
+    # model type
+    print("\nAvailable models:")
+    for key in model_config:
+        print("Type: " + key + " -> " + model_config[key])
+    user_model = input("Choose the type of model: ")
+    config = LLMConfig()
+    if user_model in model_config.keys():
+        config.model_name = model_config[user_model]
+        
     if user_retriever not in retriever_type:
         print("Unknown retriever.")
         return None
@@ -55,7 +72,7 @@ def get_user_settings():
     elif user_retriever == retriever_type[2]:   # HybridRetriever
         retriever = HybridRetriever(DOCS_FOLDER) 
         
-    return retriever
+    return retriever, config
 
 
 def print_document_context_name():
@@ -104,9 +121,9 @@ def main():
     """
     Main method to get user prompt, manage them and return the model answers.
     """
-    
-    llm = LocalLLM()                        # load model structur and weigths
-    retriever = get_user_settings()
+                           
+    retriever, config = get_user_settings()    
+    llm = LocalLLM(config)                  # load model structur and weigths
     print_document_context_name()
     
     while True:
